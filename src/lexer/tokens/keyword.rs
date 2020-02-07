@@ -25,6 +25,12 @@ impl Keyword {
     }
 }
 
+impl Display for Keyword {
+    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
+        write!(f, "invalid token")
+    }
+}
+
 pub struct KeywordError;
 impl Display for KeywordError {
     fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {

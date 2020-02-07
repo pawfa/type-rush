@@ -2,6 +2,7 @@ use std::string::ToString;
 use core::fmt;
 use std::error;
 use crate::lexer::tokens::kind::TokenKind;
+use std::fmt::{Display, Formatter};
 
 pub struct Token {
     pub kind: TokenKind,
@@ -12,6 +13,12 @@ impl Token {
         Self {
             kind,
         }
+    }
+}
+
+impl Display for Token {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+        write!(f, "{}", self.kind)
     }
 }
 
