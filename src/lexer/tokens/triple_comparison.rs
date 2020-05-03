@@ -1,7 +1,7 @@
-use std::str::FromStr;
 use std::fmt::{Error, Display, Formatter};
 use crate::lexer::tokens::token_error::TokenError;
 
+#[derive(Clone, PartialEq)]
 pub enum TripleComparison {
     StrictEqual,
     StrictNotEqual,
@@ -26,6 +26,10 @@ impl TripleComparison {
 
 impl Display for TripleComparison {
     fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-        write!(f, "invalid token")
+        match self {
+            &TripleComparison::StrictEqual => write!(f, "==="),
+            &TripleComparison::StrictNotEqual => write!(f, "!=="),
+        }
+
     }
 }

@@ -21,6 +21,7 @@ impl error::Error for CharError {
     }
 }
 
+#[derive(Clone, PartialEq)]
 pub enum Parenthesis {
     LBrace,
     RBrace,
@@ -51,13 +52,19 @@ impl Parenthesis {
 
 impl Display for Parenthesis {
     fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-        write!(f, "invalid token")
+
+        match self {
+            &Parenthesis::LBrace => write!(f, "{{"),
+            &Parenthesis::RBrace => write!(f, "}}"),
+            &Parenthesis::LParen => write!(f, "("),
+            &Parenthesis::RParen => write!(f, ")"),
+        }
     }
 }
 
 impl Display for ParenthesisError {
     fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-        write!(f, "invalid token")
+        write!(f, "Parenthesis lexing error")
     }
 }
 

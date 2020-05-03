@@ -1,7 +1,5 @@
 use std::str::FromStr;
 use std::fmt::{Error, Display, Formatter};
-use core::fmt;
-use std::error;
 use crate::lexer::tokens::token_error::TokenError;
 
 pub enum Assignment {
@@ -25,7 +23,7 @@ impl Assignment {
 
 impl Display for Assignment {
     fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-        write!(f, "invalid token")
+        write!(f, "{}", self)
     }
 }
 

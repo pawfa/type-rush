@@ -1,3 +1,5 @@
+
+#[derive(Clone, PartialEq)]
 pub enum FlowControl {
     If,
     Else,

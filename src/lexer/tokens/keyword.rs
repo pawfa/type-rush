@@ -1,6 +1,7 @@
 use std::str::FromStr;
 use std::fmt::{Error, Display, Formatter};
 
+#[derive(Clone, PartialEq)]
 pub enum Keyword {
     Var,
     Let,
@@ -27,14 +28,23 @@ impl Keyword {
 
 impl Display for Keyword {
     fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-        write!(f, "invalid token")
+
+        match self {
+            &Keyword::Var => write!(f,"var"),
+            &Keyword::Let => write!(f,"let"),
+            &Keyword::Const => write!(f,"const"),
+            &Keyword::Export => write!(f,"export"),
+            &Keyword::Function => write!(f,"function"),
+            &Keyword::Interface => write!(f,"interface"),
+            &Keyword::Return => write!(f,"return"),
+        }
     }
 }
 
 pub struct KeywordError;
 impl Display for KeywordError {
     fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-        write!(f, "invalid token")
+        write!(f, "Keyword lexing error")
     }
 }
 

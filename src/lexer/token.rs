@@ -4,14 +4,19 @@ use std::error;
 use crate::lexer::tokens::kind::TokenKind;
 use std::fmt::{Display, Formatter};
 
+#[derive(Clone)]
 pub struct Token {
     pub kind: TokenKind,
+    pub line_number: u64,
+    pub column_number: u64,
 }
 
 impl Token {
-    pub fn new(kind: TokenKind) -> Self {
+    pub fn new(kind: TokenKind, line_number: u64, column_number: u64) -> Self {
         Self {
             kind,
+            line_number,
+            column_number
         }
     }
 }

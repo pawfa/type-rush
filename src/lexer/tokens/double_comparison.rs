@@ -1,6 +1,6 @@
-use std::str::FromStr;
 use std::fmt::{Error, Display, Formatter};
 
+#[derive(Clone, PartialEq)]
 pub enum DoubleComparison {
     GreaterOrEqual,
     LesserOrEqual,
@@ -31,6 +31,11 @@ impl DoubleComparison {
 
 impl Display for DoubleComparison {
     fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-        write!(f, "invalid token")
+        match self {
+            &DoubleComparison::GreaterOrEqual => write!(f, ">="),
+            &DoubleComparison::LesserOrEqual => write!(f, "<="),
+            &DoubleComparison::Equal => write!(f, "=="),
+            &DoubleComparison::NotEqual => write!(f, "!="),
+        }
     }
 }

@@ -1,4 +1,3 @@
-use std::str::FromStr;
 use std::fmt::{Error, Display, Formatter};
 
 pub enum SingleComparison {
@@ -32,6 +31,10 @@ impl SingleComparison {
 
 impl Display for SingleComparison {
     fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-        write!(f, "invalid token")
+        match self {
+            &SingleComparison::Greater => write!(f, ">"),
+            &SingleComparison::Lesser => write!(f, "<"),
+        }
+
     }
 }

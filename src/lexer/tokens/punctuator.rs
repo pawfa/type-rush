@@ -33,14 +33,22 @@ impl Punctuator {
 
 impl Display for Punctuator {
     fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-        write!(f, "invalid token")
+
+        match self {
+            &Punctuator::Dot => write!(f, "."),
+            &Punctuator::Comma => write!(f, ","),
+            &Punctuator::Semicolon => write!(f, ";"),
+            &Punctuator::Colon => write!(f, ":"),
+            &Punctuator::QuestionMark => write!(f, "?"),
+        }
+
     }
 }
 
 pub struct PunctuatorError;
 impl Display for PunctuatorError {
     fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-        write!(f, "invalid token")
+        write!(f, "Punctuator lexing error")
     }
 }
 
