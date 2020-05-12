@@ -9,6 +9,6 @@ fn main() {
     let mut tokenizer = lexer::tokenizer::Tokenizer::new(&buffer);
     tokenizer.lex();
     let vector = tokenizer.tokens;
-    let parser = Parser::new(&vector);
+    let mut parser = Parser::new(&vector);
     parser.parse_all();
 }

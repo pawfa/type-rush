@@ -1,7 +1,7 @@
 use std::str::FromStr;
 use std::fmt::{Error, Display, Formatter};
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Copy, PartialEq)]
 pub enum Keyword {
     Var,
     Let,

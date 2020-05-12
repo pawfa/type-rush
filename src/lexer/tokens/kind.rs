@@ -5,7 +5,7 @@ use crate::lexer::tokens::triple_comparison::TripleComparison;
 use std::fmt::{Display, Formatter};
 use core::fmt;
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone,PartialEq)]
 pub enum TokenKind {
     Illegal(char),
 

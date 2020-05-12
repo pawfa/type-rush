@@ -21,7 +21,7 @@ impl error::Error for CharError {
     }
 }
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Copy, PartialEq)]
 pub enum Parenthesis {
     LBrace,
     RBrace,

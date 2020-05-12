@@ -1,7 +1,7 @@
 use std::fmt::{Error, Display, Formatter};
 use crate::lexer::tokens::token_error::TokenError;
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Copy, PartialEq)]
 pub enum TripleComparison {
     StrictEqual,
     StrictNotEqual,

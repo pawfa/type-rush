@@ -8,11 +8,12 @@ use crate::parser::statement::Statement;
 use std::cell::Cell;
 use crate::lexer::tokens::kind::TokenKind;
 use crate::lexer::tokens::parenthesis::Parenthesis;
+use std::borrow::Borrow;
 
 pub struct Parser<'a> {
     tokens: &'a Vec<Token>,
     statements: Vec<Statement>,
-    pos: Cell<usize>
+    pos: usize
 }
 
 impl<'a> Parser<'a> {
@@ -20,7 +21,7 @@ impl<'a> Parser<'a> {
         Self {
             tokens,
             statements: Vec::new(),
-            pos: Cell::from(0)
+            pos: 0
         }
     }
 
@@ -32,44 +33,82 @@ impl<'a> Parser<'a> {
         }
     }
 
-    fn increment(&self) {
-        self.pos.set(self.pos.get()+1);
+    fn increment(&mut self) {
+        self.pos = self.pos +1
     }
 
-    pub fn parse_all(&self) {
-        while self.pos.get() < self.tokens.len() {
+    pub fn parse_all(&mut self) {
+        while self.pos < self.tokens.len() {
             let result = self.parse();
+            match result {
+                Ok(result ) => self.statements.push(result),
+                Err(result) => println!("{} err", result)
+            }
         }
     }
 
-    pub fn parse(&self) -> Result<(), ParserError> {
-        loop {
-            if self.pos.get() > self.tokens.len() {
-                break
-            }
-
-            let token = self.get_token(self.pos.get())?.kind;
+    pub fn parse(&mut self) -> Result<Statement, ParserError> {
+            let token = self.get_token(self.pos)?.kind;
 
             self.increment();
-            match token {
+            return match token {
                 TokenKind::Keyword(Keyword::Function) => {
-
                     loop {
-                        let func_token = self.get_token(self.pos.get())?.kind;
-
+                        let func_token = self.get_token(self.pos)?.kind;
                         self.increment();
 
-                        if func_token == TokenKind::Parenthesis(Parenthesis::RParen) {
-                            break
-                        }
+                        let name = match func_token {
+                            TokenKind::Identifier(ref name) => name.clone(),
+                            _ => {
+                                println!("{} err", func_token);
+                                return Err(ParserError::FunctionName)
+                            }
+                        };
+                        let args = self.parse_function_parameters();
+                        println!("{} arg", args.unwrap().get(1).unwrap());
+
+                        return Ok(Statement::FunctionDeclaration(name,Vec::new(),Box::new(Statement::Block)))
                     }
-                    println!("{}", token)
                 },
-                _ => println!("{}", "empty")
+                _ => Err(ParserError::Generic)
+        };
+    }
+
+    pub fn parse_function_parameters(&mut self) -> Result<Vec<Statement>, ParserError> {
+        let mut params = Vec::new();
+
+        loop {
+            let token = self.get_token(self.pos)?.kind;
+            self.increment();
+
+            if token == TokenKind::Parenthesis(Parenthesis::RParen) {
+                return Ok(params)
             }
 
+            match token {
+                TokenKind::Identifier(token) => {
+                    let arg_name = token.clone();
+
+                    loop {
+                        let arg_token = self.get_token(self.pos)?.kind;
+                        self.increment();
+                        match arg_token {
+                            TokenKind::Identifier(arg_token) => {
+                                params.push(Statement::TypedArgument(arg_name, arg_token));
+                                break
+                            },
+                            TokenKind::Punctuator(':') => {},
+                            TokenKind::Punctuator(',') => {},
+                            _ => {}
+                        }
+
+                    }
+
+
+                },
+                _ => {}
+            }
         }
-        return Ok({})
 
     }
 }
