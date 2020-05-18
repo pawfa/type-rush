@@ -5,7 +5,8 @@ use std::error;
 pub enum ParserError {
     GetToken,
     Generic,
-    FunctionName
+    FunctionName,
+    Message(&'static str)
 }
 
 impl fmt::Display for ParserError {
@@ -14,9 +15,11 @@ impl fmt::Display for ParserError {
             ParserError::GetToken =>
                 write!(f, "Generic error - Failed getting token"),
             ParserError::Generic =>
-                write!(f, "Failed getting token"),
+                write!(f, ""),
             ParserError::FunctionName =>
                 write!(f, "Function name is required"),
+            ParserError::Message(v) =>
+                write!(f, "{} message", v),
         }
     }
 }
@@ -27,6 +30,7 @@ impl error::Error for ParserError {
             ParserError::GetToken => None,
             ParserError::Generic => None,
             ParserError::FunctionName => None,
+            ParserError::Message(v) => None,
         }
     }
 }
