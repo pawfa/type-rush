@@ -2,7 +2,7 @@ use std::fmt::{Display, Formatter};
 use core::fmt;
 
 #[derive(Clone, PartialEq)]
-pub enum Literal {
+pub enum Value {
     Boolean(bool),
     String(String),
     Num(f64),
@@ -10,14 +10,14 @@ pub enum Literal {
     Undefined
 }
 
-impl Display for Literal {
+impl Display for Value {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
         match self {
-            Literal::Boolean(v) => v.fmt(f),
-            Literal::String(v) => v.fmt(f),
-            Literal::Num(x) => write!(f, "{}", x),
-            Literal::Null => write!(f, "null"),
-            Literal::Undefined => write!(f, "undefined"),
+            Value::Boolean(v) => v.fmt(f),
+            Value::String(v) => v.fmt(f),
+            Value::Num(x) => write!(f, "{}", x),
+            Value::Null => write!(f, "null"),
+            Value::Undefined => write!(f, "undefined"),
             _ => write!(f, "invalid token kind")
         }
     }

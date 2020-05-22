@@ -2,6 +2,7 @@ use std::str::FromStr;
 use std::fmt::{Error, Display, Formatter};
 use crate::lexer::tokens::token_error::TokenError;
 
+#[derive(Clone, Copy, PartialEq)]
 pub enum ArithmeticOperator {
     PLUS,
     MINUS,

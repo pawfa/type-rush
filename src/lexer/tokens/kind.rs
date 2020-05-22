@@ -4,13 +4,15 @@ use crate::lexer::tokens::double_comparison::DoubleComparison;
 use crate::lexer::tokens::triple_comparison::TripleComparison;
 use std::fmt::{Display, Formatter};
 use core::fmt;
+use crate::lexer::tokens::arithmetic_operator::ArithmeticOperator;
+use crate::lexer::tokens::literal::Literal;
 
 #[derive(Clone,PartialEq)]
 pub enum TokenKind {
     Illegal(char),
 
     Assignment(char),
-    ArithmeticOperator(char),
+    ArithmeticOperator(ArithmeticOperator),
     SingleComparison(char),
     DoubleComparison(DoubleComparison),
     TripleComparison(TripleComparison),
@@ -20,6 +22,7 @@ pub enum TokenKind {
     Identifier(String),
     ControlFlow(FlowControl),
     Iteration(Iteration),
+    Literal(Literal)
 }
 
 impl Display for TokenKind {
@@ -33,10 +36,7 @@ impl Display for TokenKind {
             TokenKind::Parenthesis(v) => v.fmt(f),
             TokenKind::Punctuator(v) => v.fmt(f),
             TokenKind::Keyword(v) => v.fmt(f),
-//            TokenKind::Literal(v) => v.fmt(f),
             TokenKind::Identifier(v) => v.fmt(f),
-//            TokenKind::ControlFlow(v) => v.fmt(f),
-//            TokenKind::Iteration(v) => v.fmt(f),
             _ => write!(f, "invalid token kind")
         }
     }

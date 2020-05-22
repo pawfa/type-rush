@@ -78,7 +78,8 @@ impl<'a> Tokenizer<'a> {
                 }
                 _ if ArithmeticOperator::from_char(buf_char).is_ok()  => {
                     self.column_number += 1;
-                    self.tokens.push(Token::new(TokenKind::ArithmeticOperator(buf_char), self.line_number, self.column_number))
+                    let operator = ArithmeticOperator::from_char(buf_char).unwrap();
+                    self.tokens.push(Token::new(TokenKind::ArithmeticOperator(operator), self.line_number, self.column_number))
                 }
                 _ if Punctuator::from_char(buf_char).is_ok()  => {
                     self.column_number += 1;
