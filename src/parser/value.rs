@@ -2,18 +2,18 @@ use std::fmt::{Display, Formatter};
 use core::fmt;
 
 #[derive(Clone, PartialEq)]
-pub enum Value {
+pub enum PrimitiveValue {
     Boolean(bool),
     String(String),
     Num(f64),
 }
 
-impl Display for Value {
+impl Display for PrimitiveValue {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
         match self {
-            Value::Boolean(v) => v.fmt(f),
-            Value::String(v) => v.fmt(f),
-            Value::Num(x) => write!(f, "{}", x),
+            PrimitiveValue::Boolean(v) => v.fmt(f),
+            PrimitiveValue::String(v) => v.fmt(f),
+            PrimitiveValue::Num(x) => write!(f, "{}", x),
         }
     }
 }

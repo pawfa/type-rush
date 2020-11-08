@@ -5,7 +5,7 @@ use crate::parser::statement::Statement;
 use crate::lexer::tokens::kind::TokenKind;
 use crate::lexer::tokens::parenthesis::Parenthesis;
 use crate::lexer::tokens::arithmetic_operator::ArithmeticOperator;
-use crate::parser::value::Value;
+use crate::parser::value::PrimitiveValue;
 use crate::lexer::tokens::literal::Literal;
 
 pub struct Parser<'a> {
@@ -95,16 +95,14 @@ impl<'a> Parser<'a> {
                     Ok(Token {
                            kind: TokenKind::Assignment('='),
                            ..
-                       }) => {
-                        self.parse()?
-                    },
-                    Ok(_) => {
-
-                        return Err(ParserError::Message("Assignment error"))
-                    },
-                    Err(_) => {
-                        return Err(ParserError::GetToken);
-                    }
+                       }) =>
+                        match self.parse() {
+                            Ok(v) => v,
+                            Err(t) => {
+                                return Err(ParserError::Message("Assignment error"))
+                            }
+                        },
+                    _ => return Err(ParserError::Message("Assignment error")),
                 };
 
                 return Ok(Statement::ConstDeclaration(const_name, Box::new(const_value)));
@@ -141,17 +139,28 @@ impl<'a> Parser<'a> {
     fn parse_arithmetic_operation(&mut self, operator: ArithmeticOperator) -> Result<Statement, ParserError> {
         let first_variable =
             match self.get_token(self.pos - 2)?.kind {
-                TokenKind::Identifier(first_variable) => first_variable,
+                TokenKind::Literal(first_variable) => match first_variable {
+                    Literal::Boolean(v) => Statement::Primitive(PrimitiveValue::Boolean(v)),
+                    Literal::String(v) => Statement::Primitive(PrimitiveValue::String(v)),
+                    Literal::Num(v) => Statement::Primitive(PrimitiveValue::Num(v))
+                },
+                TokenKind::Identifier(first_variable) => Statement::VariableRef(first_variable),
                 _ => return Err(ParserError::Message("Should be identifier"))
             };
 
         let second_variable =
             match self.get_token(self.pos)?.kind {
-                TokenKind::Identifier(second_variable) => second_variable,
+                TokenKind::Literal(second_variable) => match second_variable {
+                    Literal::Boolean(v) => Statement::Primitive(PrimitiveValue::Boolean(v)),
+                    Literal::String(v) => Statement::Primitive(PrimitiveValue::String(v)),
+                    Literal::Num(v) => Statement::Primitive(PrimitiveValue::Num(v))
+                },
+                TokenKind::Identifier(second_variable) => Statement::VariableRef(second_variable),
                 _ => return Err(ParserError::Message("Should be identifier"))
             };
         self.increment();
-        return Ok(Statement::ArithmeticOperation(operator, Box::new(Statement::VariableRef(first_variable)), Box::new(Statement::VariableRef(second_variable))));
+
+        return Ok(Statement::ArithmeticOperation(operator, Box::new(first_variable), Box::new(second_variable)));
     }
 
     fn parse_function_parameters(&mut self) -> Result<Vec<Statement>, ParserError> {
@@ -200,7 +209,7 @@ impl<'a> Parser<'a> {
             }
 
             match token {
-                TokenKind::Literal(Literal::Num(token)) => params.push(Statement::Value(Value::Num(token))),
+                TokenKind::Literal(Literal::Num(token)) => params.push(Statement::Primitive(PrimitiveValue::Num(token))),
                 _ => {}
             }
         }

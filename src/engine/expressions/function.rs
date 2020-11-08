@@ -15,9 +15,7 @@ impl Function {
             expression
         }
     }
-    pub fn call (&self, call_args: Vec<Statement>) {
-        println!("{}", "calling");
-    }
+    pub fn call (&self, call_args: Vec<Statement>) {}
 }
 
 impl Display for Function {

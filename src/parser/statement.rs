@@ -1,7 +1,7 @@
 use std::fmt::{Display, Formatter};
 use core::fmt;
 use crate::lexer::tokens::arithmetic_operator::ArithmeticOperator;
-use crate::parser::value::Value;
+use crate::parser::value::PrimitiveValue;
 
 #[derive(Clone, PartialEq)]
 pub enum Statement {
@@ -10,7 +10,7 @@ pub enum Statement {
     ConstDeclaration(String, Box<Statement>),
     //reference to some variable or function
     VariableRef(String),
-    Value(Value),
+    Primitive(PrimitiveValue),
     //name, arguments
     Call(String, Vec<Statement>),
     Return(Box<Statement>),
@@ -38,15 +38,16 @@ impl Display for Statement {
                 write!(f, " Block: ");
                 writeln!(f);
                 for statement in v {
-                    write!(f,"{}, ", statement);
+                    writeln!(f,"in block: {}, ", statement);
                 }
                 Ok(())
             }
             Statement::TypedArgument(v,s) => write!(f, "typed arguments ({}, {})", v, s),
-            Statement::Value(v) => write!(f,"value {}", v),
+            Statement::Primitive(v) => write!(f, "value {}", v),
             Statement::VariableRef(v) => write!(f,"variable ref with name {}",v),
             Statement::Call(v,_) => write!(f,"call name {}", v),
             Statement::ArithmeticOperation(v,s,t) => write!(f,"arithmetic operation {} {} {}", v,s,t),
+            Statement::Return(v) => write!(f,"return statement: {}", v),
             _ => write!(f, "invalid statement kind")
         }
     }
