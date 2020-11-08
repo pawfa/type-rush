@@ -4,12 +4,13 @@ use crate::parser::parse_errors::ParserError;
 use crate::parser::statement::Statement;
 use crate::lexer::tokens::kind::TokenKind;
 use crate::lexer::tokens::parenthesis::Parenthesis;
-use crate::parser::statement::Statement::ExpressionStatement;
 use crate::lexer::tokens::arithmetic_operator::ArithmeticOperator;
+use crate::parser::value::Value;
+use crate::lexer::tokens::literal::Literal;
 
 pub struct Parser<'a> {
     tokens: &'a Vec<Token>,
-    statements: Vec<Statement>,
+    pub statements: Vec<Statement>,
     pos: usize,
 }
 
@@ -39,34 +40,25 @@ impl<'a> Parser<'a> {
             let result = self.parse();
             match result {
                 Ok(result) => self.statements.push(result),
-                Err(result) => {
-                    // println!("{:?}", result)
-
-                }
+                Err(_) => {}
             }
         }
     }
 
-    pub fn parse(&mut self) -> Result<Statement, ParserError> {
+    fn parse(&mut self) -> Result<Statement, ParserError> {
         let token = self.get_token(self.pos)?.kind;
 
         self.increment();
         return match token {
-            TokenKind::Punctuator(';') => {
-                self.parse()
-            }
             TokenKind::Keyword(Keyword::Return) => {
-                self.increment();
-                let return_value = match self.parse() {
-                    Ok(return_value) => Ok(return_value),
-                    Err(e) => Err(e)
-                };
-                return return_value
-            }
+                Ok(Statement::Return(Box::new(self.parse()?)))
+            },
             TokenKind::Identifier(token) => {
-                let next_token = self.get_token(self.pos+1)?.kind;
+                let next_token = self.get_token(self.pos)?.kind;
                 if next_token == TokenKind::Parenthesis(Parenthesis::LParen) {
-                    let function_call_args = self.parse_call_parameters();
+                    self.increment();
+                    let function_call_args = self.parse_call_parameters()?;
+                    return Ok(Statement::Call(token, function_call_args));
                 }
                 return Ok(Statement::VariableRef(token));
             }
@@ -79,12 +71,9 @@ impl<'a> Parser<'a> {
                 loop {
                     if self.get_token(self.pos)?.kind == TokenKind::Parenthesis(Parenthesis::RBrace) {
                         break;
-                    } else {
-                        block_expressions.push(self.parse()?)
                     }
+                    block_expressions.push(self.parse()?)
                 }
-                self.increment();
-                println!("{} length", block_expressions.len());
                 return Ok(Statement::Block(block_expressions));
             }
             TokenKind::Keyword(Keyword::Const) => {
@@ -95,27 +84,28 @@ impl<'a> Parser<'a> {
                        }) => {
                         const_name.clone()
                     }
-                    Ok(token) => return Err(ParserError::Message("Const name is required")),
+                    Ok(_) => return Err(ParserError::Message("Const name is required")),
                     Err(_) => {
                         return Err(ParserError::GetToken);
                     }
                 };
+
                 self.increment();
                 let const_value = match self.get_token(self.pos) {
                     Ok(Token {
                            kind: TokenKind::Assignment('='),
                            ..
                        }) => {
-                        self.increment();
                         self.parse()?
                     },
-                    Ok(token) => return Err(ParserError::Message("Assignment error")),
+                    Ok(_) => {
+
+                        return Err(ParserError::Message("Assignment error"))
+                    },
                     Err(_) => {
                         return Err(ParserError::GetToken);
                     }
                 };
-
-                println!("{} const name", const_value);
 
                 return Ok(Statement::ConstDeclaration(const_name, Box::new(const_value)));
             }
@@ -139,36 +129,32 @@ impl<'a> Parser<'a> {
                         return Err(ParserError::Message("Expected bracket"));
                     }
 
-                    let body = self.parse()?;
-
-                    return Ok(Statement::FunctionDeclaration(name, args, Box::new(body)));
+                    return Ok(Statement::FunctionDeclaration(name, args, Box::new(self.parse()?)));
                 }
             }
-            y => {
-                println!("{} not matched", y);
-                Err(ParserError::Generic)
+            _ => {
+                return self.parse();
             }
         };
     }
 
-    pub fn parse_arithmetic_operation(&mut self, operator: ArithmeticOperator) -> Result<Statement, ParserError>{
-            let first_variable =
-                match self.get_token(self.pos -1)?.kind {
+    fn parse_arithmetic_operation(&mut self, operator: ArithmeticOperator) -> Result<Statement, ParserError> {
+        let first_variable =
+            match self.get_token(self.pos - 2)?.kind {
                 TokenKind::Identifier(first_variable) => first_variable,
+                _ => return Err(ParserError::Message("Should be identifier"))
+            };
 
+        let second_variable =
+            match self.get_token(self.pos)?.kind {
+                TokenKind::Identifier(second_variable) => second_variable,
                 _ => return Err(ParserError::Message("Should be identifier"))
             };
         self.increment();
-        let second_variable =
-            match self.get_token(self.pos -1)?.kind {
-                TokenKind::Identifier(second_variable) => second_variable,
-
-                _ => return Err(ParserError::Message("Should be identifier"))
-            };
-        return Ok(Statement::ArithmeticOperation(operator, Box::new(Statement::VariableRef(first_variable)), Box::new(Statement::VariableRef(second_variable))))
+        return Ok(Statement::ArithmeticOperation(operator, Box::new(Statement::VariableRef(first_variable)), Box::new(Statement::VariableRef(second_variable))));
     }
 
-    pub fn parse_function_parameters(&mut self) -> Result<Vec<Statement>, ParserError> {
+    fn parse_function_parameters(&mut self) -> Result<Vec<Statement>, ParserError> {
         let mut params = Vec::new();
 
         loop {
@@ -202,7 +188,7 @@ impl<'a> Parser<'a> {
         }
     }
 
-    pub fn parse_call_parameters(&mut self) -> Result<Vec<Statement>, ParserError> {
+    fn parse_call_parameters(&mut self) -> Result<Vec<Statement>, ParserError> {
         let mut params = Vec::new();
 
         loop {
@@ -214,23 +200,7 @@ impl<'a> Parser<'a> {
             }
 
             match token {
-                TokenKind::Identifier(token) => {
-                    let arg_name = token.clone();
-
-                    loop {
-                        let arg_token = self.get_token(self.pos)?.kind;
-                        self.increment();
-                        match arg_token {
-                            TokenKind::Identifier(arg_token) => {
-                                params.push(Statement::Value(arg_name));
-                                break;
-                            }
-                            TokenKind::Punctuator(':') => {}
-                            TokenKind::Punctuator(',') => {}
-                            _ => {}
-                        }
-                    }
-                }
+                TokenKind::Literal(Literal::Num(token)) => params.push(Statement::Value(Value::Num(token))),
                 _ => {}
             }
         }

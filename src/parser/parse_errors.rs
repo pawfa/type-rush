@@ -30,7 +30,7 @@ impl error::Error for ParserError {
             ParserError::GetToken => None,
             ParserError::Generic => None,
             ParserError::FunctionName => None,
-            ParserError::Message(v) => None,
+            ParserError::Message(_v) => None,
         }
     }
 }

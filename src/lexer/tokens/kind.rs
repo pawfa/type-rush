@@ -10,7 +10,6 @@ use crate::lexer::tokens::literal::Literal;
 #[derive(Clone,PartialEq)]
 pub enum TokenKind {
     Illegal(char),
-
     Assignment(char),
     ArithmeticOperator(ArithmeticOperator),
     SingleComparison(char),
@@ -37,6 +36,7 @@ impl Display for TokenKind {
             TokenKind::Punctuator(v) => v.fmt(f),
             TokenKind::Keyword(v) => v.fmt(f),
             TokenKind::Identifier(v) => v.fmt(f),
+            TokenKind::Literal(v) => v.fmt(f),
             _ => write!(f, "invalid token kind")
         }
     }

@@ -1,6 +1,7 @@
 use std::str::FromStr;
-use std::fmt::{Error, Display, Formatter};
+use std::fmt::{Display, Formatter};
 use crate::lexer::tokens::token_error::TokenError;
+use core::fmt;
 
 #[derive(Clone, Copy, PartialEq)]
 pub enum ArithmeticOperator {
@@ -32,8 +33,13 @@ impl ArithmeticOperator {
 }
 
 impl Display for ArithmeticOperator {
-    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-        write!(f, "{}", self)
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+        match self {
+            ArithmeticOperator::PLUS => write!(f, "+"),
+            ArithmeticOperator::MINUS => write!(f, "-"),
+            ArithmeticOperator::MULTIPLICATION => write!(f, "*"),
+            ArithmeticOperator::DIVISION => write!(f,"/")
+        }
     }
 }
 

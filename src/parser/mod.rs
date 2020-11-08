@@ -1,4 +1,4 @@
 pub mod parser;
-mod statement;
+pub mod statement;
 mod parse_errors;
 mod value;

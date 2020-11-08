@@ -6,8 +6,6 @@ pub enum Value {
     Boolean(bool),
     String(String),
     Num(f64),
-    Null,
-    Undefined
 }
 
 impl Display for Value {
@@ -16,9 +14,6 @@ impl Display for Value {
             Value::Boolean(v) => v.fmt(f),
             Value::String(v) => v.fmt(f),
             Value::Num(x) => write!(f, "{}", x),
-            Value::Null => write!(f, "null"),
-            Value::Undefined => write!(f, "undefined"),
-            _ => write!(f, "invalid token kind")
         }
     }
 }

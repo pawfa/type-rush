@@ -9,6 +9,7 @@ use crate::lexer::tokens::triple_comparison::TripleComparison;
 use crate::lexer::token::{Token, TokenizerError};
 use crate::lexer::tokens::assignment::Assignment;
 use crate::lexer::tokens::arithmetic_operator::ArithmeticOperator;
+use crate::lexer::tokens::literal::Literal;
 
 pub struct Tokenizer<'a> {
     pub tokens: Vec<Token>,
@@ -108,7 +109,10 @@ impl<'a> Tokenizer<'a> {
                     if let Ok(keyword) = FromStr::from_str(buf_compare) {
                         self.tokens.push(Token::new(TokenKind::Keyword(keyword), self.line_number, self.column_number))
                     } else {
-                        self.tokens.push(Token::new(TokenKind::Identifier(s), self.line_number, self.column_number))
+                        match s.parse::<f64>() {
+                            Ok(s) => self.tokens.push(Token::new(TokenKind::Literal(Literal::Num(s)), self.line_number, self.column_number)),
+                            Err(_) => self.tokens.push(Token::new(TokenKind::Identifier(buf_compare.to_string()), self.line_number, self.column_number)),
+                        }
                     }
                 }
                 '\u{0020}' | '\u{0009}' | '\u{000B}' | '\u{000C}' | '\u{00A0}' | '\u{FEFF}' |
