@@ -7,7 +7,7 @@ use crate::parser::value::PrimitiveValue;
 pub enum Statement {
     //name, arguments, body
     FunctionDeclaration(String, Vec<Statement>, Box<Statement>),
-    ConstDeclaration(String, Box<Statement>),
+    ConstDeclaration(String, Vec<Statement>),
     //reference to some variable or function
     VariableRef(String),
     Primitive(PrimitiveValue),

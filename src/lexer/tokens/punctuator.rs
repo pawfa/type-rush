@@ -7,6 +7,7 @@ pub enum Punctuator {
     Colon,
     QuestionMark,
     Dot,
+    EOL
 }
 
 impl Punctuator {
@@ -17,6 +18,7 @@ impl Punctuator {
             &Punctuator::Semicolon => ";",
             &Punctuator::Colon => ":",
             &Punctuator::QuestionMark => "?",
+            &Punctuator::EOL => "EOL"
         }
     }
     pub fn from_char(s: char) -> Result<Self,()> {
@@ -26,6 +28,7 @@ impl Punctuator {
             ';' => Ok(Punctuator::Semicolon),
             ':' => Ok(Punctuator::Colon),
             '?' => Ok(Punctuator::QuestionMark),
+            '\n' => Ok(Punctuator::EOL),
             _ => Err(()),
         }
     }
@@ -40,6 +43,7 @@ impl Display for Punctuator {
             &Punctuator::Semicolon => write!(f, ";"),
             &Punctuator::Colon => write!(f, ":"),
             &Punctuator::QuestionMark => write!(f, "?"),
+            &Punctuator::EOL => write!(f, "EOL")
         }
 
     }
@@ -61,6 +65,7 @@ impl FromStr for Punctuator {
             ";" => Ok(Punctuator::Semicolon),
             ":" => Ok(Punctuator::Colon),
             "?" => Ok(Punctuator::QuestionMark),
+            "\n" => Ok(Punctuator::EOL),
             _ => Err(PunctuatorError),
         }
     }

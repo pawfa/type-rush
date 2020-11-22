@@ -23,7 +23,7 @@ impl EnvironmentRecord {
 impl Display for EnvironmentRecord {
         fn fmt(&self, f: &mut Formatter) -> fmt::Result {
             let mut records = String::new();
-            for record in self.records.clone() {
+            for record in &self.records {
                 records.push_str( "[");
                 records.push_str( "name: ");
                 records.push_str( record.0.to_string().as_str());

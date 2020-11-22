@@ -91,21 +91,25 @@ impl<'a> Parser<'a> {
                 };
 
                 self.increment();
-                let const_value = match self.get_token(self.pos) {
-                    Ok(Token {
-                           kind: TokenKind::Assignment('='),
-                           ..
-                       }) =>
-                        match self.parse() {
-                            Ok(v) => v,
-                            Err(t) => {
-                                return Err(ParserError::Message("Assignment error"))
-                            }
-                        },
-                    _ => return Err(ParserError::Message("Assignment error")),
-                };
 
-                return Ok(Statement::ConstDeclaration(const_name, Box::new(const_value)));
+                let assignment = self.get_token(self.pos)?;
+                if assignment.kind == TokenKind::Assignment('=') {
+                    self.increment();
+                }else {
+                    return Err(ParserError::Message("Assignment error"))
+                }
+
+                let mut arguments = Vec::new();
+
+                loop {
+                    let token = self.get_token(self.pos)?.kind;
+
+                    if token == TokenKind::Punctuator('\n') || token == TokenKind::Punctuator(';') {
+                        return Ok(Statement::ConstDeclaration(const_name, arguments));
+                    } else {
+                        arguments.push(self.parse()?);
+                    }
+                }
             }
             TokenKind::Keyword(Keyword::Function) => {
                 loop {
@@ -129,7 +133,8 @@ impl<'a> Parser<'a> {
 
                     return Ok(Statement::FunctionDeclaration(name, args, Box::new(self.parse()?)));
                 }
-            }
+            },
+            TokenKind::Punctuator('\n') => self.parse(),
             _ => {
                 return self.parse();
             }
