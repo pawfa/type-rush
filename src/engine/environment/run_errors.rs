@@ -10,7 +10,7 @@ impl fmt::Display for RunError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
             RunError::Message(v) =>
-                write!(f, "{} message", v),
+                write!(f, "{}", v),
         }
     }
 }

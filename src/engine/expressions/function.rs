@@ -15,7 +15,20 @@ impl Function {
             expression
         }
     }
-    pub fn call (&self, call_args: Vec<Statement>) {}
+    pub fn call (&self, call_args: Vec<Statement>) {
+
+        for arg in self.args.clone() {
+            match arg {
+                Statement::TypedArgument(n,t) => println!("stored typed arg name {}, type {}", n,t),
+                a =>println!("stored arg {}", a)
+            }
+
+        };
+
+        for arg in call_args {
+            println!("call arg {}", arg)
+        }
+    }
 }
 
 impl Display for Function {
