@@ -17,18 +17,18 @@ pub struct Runner {
 impl Runner {
 
     pub fn new() -> Self {
-        let mut runner = Runner {
+        let runner = Runner {
             global: EnvironmentRecord::new(EnvironmentType::Global),
         };
         runner
     }
 
     pub fn start(&mut self, statements: Vec<Statement>) {
-        let mut global_scope = &mut EnvironmentRecord::new(EnvironmentType::Global);
+        let global_scope = &mut EnvironmentRecord::new(EnvironmentType::Global);
         for statement in statements {
 
-            let result = match self.run(statement, global_scope) {
-                Ok(v) => println!("result {}", v),
+            match self.run(statement, global_scope) {
+                Ok(_v) => {},
                 Err(e) => println!("result error {}", e)
             };
         }

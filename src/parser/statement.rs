@@ -48,7 +48,6 @@ impl Display for Statement {
             Statement::Call(v,_) => write!(f,"call name {}", v),
             Statement::ArithmeticOperation(v,s,t) => write!(f,"arithmetic operation {} {} {}", v,s,t),
             Statement::Return(v) => write!(f,"return statement: {}", v),
-            _ => write!(f, "invalid statement kind")
         }
     }
 }
