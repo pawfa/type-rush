@@ -28,24 +28,16 @@ impl Runner {
         for statement in statements {
 
             match self.run(statement, global_scope) {
-                Ok(_v) => {},
+                Ok(v) => println!("result {}", v),
                 Err(e) => println!("result error {}", e)
             };
         }
     }
 
     fn run(&mut self, statement: Statement, scope: &mut EnvironmentRecord) -> RunResult {
-        // for env in scope.records.clone() {
-        //     match env.1.value.clone() {
-        //         Some(t) => println!("name {}, binding {}", env.0, t),
-        //         _ => println!("name {}", env.0)
-        //     }
-        // }
-        // println!("statement {}", statement);
         match statement {
             Statement::FunctionDeclaration(ref name, ref args,ref body) => {
                 scope.records.insert(name.clone(), EnvironmentRecordBinding { value: Option::from(JSValue::Function(Function::new(body.clone(), args.clone()))) });
-
                 return Ok(JSValue::Undefined)
             },
             Statement::ConstDeclaration(ref name, ref statements) => {
@@ -56,16 +48,39 @@ impl Runner {
             },
             Statement::VariableRef(ref name) => {
                  let test = scope.records.get(name).and_then(|v| v.value.clone()).ok_or(RunError::Message("Variable reference error"))?;
-                println!("VariableRef {}", test);
                 Ok(test)
             },
             Statement::Call(ref name, ref args) => {
-                //handle function call - how to send arguments to function declaration
                 let call_binding =  scope.records.get(name).ok_or(RunError::Message("Call error - there is no function with this name"))?;
+
                 let val = call_binding.value.clone();
                 if let Some(JSValue::Function(val)) = val {
-                    val.call(args.clone());
-                    Ok(JSValue::Function(val))
+                    let func_expression = *val.clone().expression;
+                    let func_args = val.clone().args;
+
+                    if let Statement::Block(func_expression) = func_expression {
+                        let func_scope = &mut EnvironmentRecord::new(EnvironmentType::Function);
+
+                        for (count, arg) in func_args.iter().enumerate() {
+
+                            if let Statement::TypedArgument(name,_) = arg {
+                                let passed_arg_value = match args.get(count) {
+                                    Some(arg_statement) => self.run(arg_statement.clone(),scope)?,
+                                    None => return Err(RunError::Message("Call error"))
+                                };
+                                func_scope.records.insert(name.clone(), EnvironmentRecordBinding { value: Option::from(passed_arg_value) });
+                            }
+                        }
+
+                        for statement in func_expression {
+                            let function_value = self.run(statement.clone(), func_scope)?;
+                            if let Statement::Return(_) = statement {
+                                return Ok(function_value)
+                            }
+                        }
+                    }
+
+                    Ok(JSValue::Undefined)
                 } else {
                     Err(RunError::Message("Call error"))
                 }
@@ -80,6 +95,9 @@ impl Runner {
                 let calculated_val = self.run_arithmetic_operation(op, first_val, second_val);
                 Ok(calculated_val)
             },
+            Statement::Return(v) => {
+                self.run(*v, scope)
+            }
             v => {
                 println!("not found {}",v);
                 Err(RunError::Message("Not found statement to run"))

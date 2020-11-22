@@ -69,11 +69,19 @@ impl<'a> Parser<'a> {
             TokenKind::Parenthesis(Parenthesis::LBrace) => {
                 let mut block_expressions = Vec::new();
                 loop {
-                    if self.get_token(self.pos)?.kind == TokenKind::Parenthesis(Parenthesis::RBrace) {
+
+                    if self.get_token(self.pos+2)?.kind == TokenKind::Parenthesis(Parenthesis::RBrace) {
                         break;
                     }
-                    block_expressions.push(self.parse()?)
+
+                    let token_in_block = self.parse();
+
+                    match token_in_block {
+                        Ok(token) => block_expressions.push(token),
+                        Err(e) => return Err(e)
+                    }
                 }
+
                 return Ok(Statement::Block(block_expressions));
             }
             TokenKind::Keyword(Keyword::Const) => {
@@ -126,15 +134,18 @@ impl<'a> Parser<'a> {
                     let args = self.parse_function_parameters().unwrap();
 
                     //checked if left bracket is present
-                    let func_body = self.get_token(self.pos)?.kind;
-                    if func_body != TokenKind::Parenthesis(Parenthesis::LBrace) {
+                    let left_bracket = self.get_token(self.pos)?.kind;
+                    if left_bracket != TokenKind::Parenthesis(Parenthesis::LBrace) {
                         return Err(ParserError::Message("Expected bracket"));
                     }
 
-                    return Ok(Statement::FunctionDeclaration(name, args, Box::new(self.parse()?)));
+                    let func_body = self.parse()?;
+
+                    return Ok(Statement::FunctionDeclaration(name, args, Box::new(func_body)));
                 }
             },
             TokenKind::Punctuator('\n') => self.parse(),
+            TokenKind::Parenthesis(Parenthesis::RBrace) => self.parse(),
             _ => {
                 return self.parse();
             }
