@@ -96,13 +96,21 @@ impl<'a> Tokenizer<'a> {
                     s.push(buf_char);
                     self.column_number += 1;
                     loop {
-                        let key = self.preview_next().unwrap();
-                        if key.is_alphabetic() {
-                            s.push(self.next()?);
-                            self.column_number += 1;
-                        } else {
-                            break;
+                        let key = self.preview_next();
+
+                        match key {
+                            None => {}
+                            Some(k) => {
+                                if k.is_alphabetic() || k.is_alphanumeric() {
+
+                                    s.push(self.next()?);
+                                    self.column_number += 1;
+                                } else {
+                                    break;
+                                }
+                            }
                         }
+
                     }
 
                     let buf_compare: &str = &s;
