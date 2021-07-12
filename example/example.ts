@@ -6,4 +6,4 @@ function add(first: number, second: number) {
     return result;
 }
 
-add(1,2)
+add(3,2)

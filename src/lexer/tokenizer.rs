@@ -6,13 +6,14 @@ use crate::lexer::tokens::punctuator::Punctuator;
 use crate::lexer::tokens::double_comparison::DoubleComparison;
 use crate::lexer::tokens::single_comparison::SingleComparison;
 use crate::lexer::tokens::triple_comparison::TripleComparison;
-use crate::lexer::token::{Token, TokenizerError};
+use crate::lexer::token::Token;
+use crate::lexer::token_errors::TokenizerError;
 use crate::lexer::tokens::assignment::Assignment;
 use crate::lexer::tokens::arithmetic_operator::ArithmeticOperator;
 use crate::lexer::tokens::literal::Literal;
 
 pub struct Tokenizer<'a> {
-    pub tokens: Vec<Token>,
+    tokens: Vec<Token>,
     line_number: u64,
     column_number: u64,
     buffer: Peekable<Chars<'a>>,
@@ -23,7 +24,7 @@ impl<'a> Tokenizer<'a> {
         Tokenizer {
             tokens: Vec::new(),
             line_number: 1,
-            column_number: 0,
+            column_number: 1,
             buffer: buffer.chars().peekable(),
         }
     }
@@ -35,11 +36,11 @@ impl<'a> Tokenizer<'a> {
     fn next(&mut self) -> Result<char, TokenizerError> {
         match self.buffer.next() {
             Some(ch) => Ok(ch),
-            None => Err(TokenizerError::new("finished")),
+            None => Err(TokenizerError::NoTokens),
         }
     }
 
-    pub fn lex(&mut self) -> Result<(), TokenizerError> {
+    pub fn lex(&mut self) -> Result<Vec<Token>, TokenizerError> {
         loop {
             let buf_char = self.next()?;
 
@@ -59,7 +60,7 @@ impl<'a> Tokenizer<'a> {
                                 } else {
                                     let third = self.preview_next();
                                     match third {
-                                        None => return Err(TokenizerError::new("Second sign comparison token error")),
+                                        None => return Err(TokenizerError::Message("Second sign comparison token error")),
                                         Some(key) => {
                                             s.push(key);
                                             if let Ok(triple_comparison) = TripleComparison::from_str(&s) {
@@ -117,28 +118,31 @@ impl<'a> Tokenizer<'a> {
                     if let Ok(keyword) = FromStr::from_str(buf_compare) {
                         self.tokens.push(Token::new(TokenKind::Keyword(keyword), self.line_number, self.column_number))
                     } else {
-                        match s.parse::<f64>() {
+                        match s.parse() {
                             Ok(s) => self.tokens.push(Token::new(TokenKind::Literal(Literal::Num(s)), self.line_number, self.column_number)),
                             Err(_) => self.tokens.push(Token::new(TokenKind::Identifier(buf_compare.to_string()), self.line_number, self.column_number)),
                         }
                     }
                 }
-                '\u{0020}' | '\u{0009}' | '\u{000B}' | '\u{000C}' | '\u{00A0}' | '\u{FEFF}' |
-                '\u{1680}' | '\u{2000}'..='\u{200A}' | '\u{202F}' | '\u{205F}' | '\u{3000}' => (),
-                '\u{000A}' => {
+                //tabs, nbsp, spaces
+                '\u{0009}' | '\u{000B}' | '\u{00A0}' | '\u{FEFF}' | '\u{202F}' | '\u{205F}' => (),
+                // whitespace
+                '\u{0020}' => {
+                    self.column_number += 1;
+                },
+                //carriage return
+                '\u{000D}' => {
                     self.line_number += 1;
-                }
-                '\u{000D}' => (),
-                _ => {
-                    self.tokens.push(Token::new(TokenKind::Illegal(buf_char), self.line_number, self.column_number))
-                }
+                    self.column_number = 0;
+                },
+                any => return Err(TokenizerError::Illegal(any,self.line_number, self.column_number))
             }
 
             if self.preview_next().is_none() {
-                return Err(TokenizerError::new("finished"));
+                break
             }
         }
-
+        return Ok(self.tokens.clone())
     }
 }
 
