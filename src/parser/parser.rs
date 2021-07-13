@@ -1,12 +1,12 @@
 use crate::lexer::token::Token;
+use crate::lexer::tokens::arithmetic_operator::ArithmeticOperator;
 use crate::lexer::tokens::keyword::Keyword;
+use crate::lexer::tokens::kind::TokenKind;
+use crate::lexer::tokens::literal::Literal;
+use crate::lexer::tokens::parenthesis::Parenthesis;
 use crate::parser::parse_errors::ParserError;
 use crate::parser::statement::Statement;
-use crate::lexer::tokens::kind::TokenKind;
-use crate::lexer::tokens::parenthesis::Parenthesis;
-use crate::lexer::tokens::arithmetic_operator::ArithmeticOperator;
 use crate::parser::value::PrimitiveValue;
-use crate::lexer::tokens::literal::Literal;
 
 pub struct Parser<'a> {
     tokens: &'a Vec<Token>,
@@ -52,7 +52,7 @@ impl<'a> Parser<'a> {
         return match token {
             TokenKind::Keyword(Keyword::Return) => {
                 Ok(Statement::Return(Box::new(self.parse()?)))
-            },
+            }
             TokenKind::Identifier(token) => {
                 let next_token = self.get_token(self.pos)?.kind;
                 if next_token == TokenKind::Parenthesis(Parenthesis::LParen) {
@@ -69,8 +69,7 @@ impl<'a> Parser<'a> {
             TokenKind::Parenthesis(Parenthesis::LBrace) => {
                 let mut block_expressions = Vec::new();
                 loop {
-
-                    if self.get_token(self.pos+2)?.kind == TokenKind::Parenthesis(Parenthesis::RBrace) {
+                    if self.get_token(self.pos + 2)?.kind == TokenKind::Parenthesis(Parenthesis::RBrace) {
                         break;
                     }
 
@@ -103,8 +102,8 @@ impl<'a> Parser<'a> {
                 let assignment = self.get_token(self.pos)?;
                 if assignment.kind == TokenKind::Assignment('=') {
                     self.increment();
-                }else {
-                    return Err(ParserError::Message("Assignment error"))
+                } else {
+                    return Err(ParserError::Message("Assignment error"));
                 }
 
                 let mut arguments = Vec::new();
@@ -143,7 +142,7 @@ impl<'a> Parser<'a> {
 
                     return Ok(Statement::FunctionDeclaration(name, args, Box::new(func_body)));
                 }
-            },
+            }
             TokenKind::Punctuator('\n') => self.parse(),
             TokenKind::Parenthesis(Parenthesis::RBrace) => self.parse(),
             _ => {

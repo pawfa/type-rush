@@ -12,46 +12,47 @@ use crate::lexer::tokens::assignment::Assignment;
 use crate::lexer::tokens::arithmetic_operator::ArithmeticOperator;
 use crate::lexer::tokens::literal::Literal;
 
-pub struct Tokenizer<'a> {
+
+pub struct Lexer<'a> {
     tokens: Vec<Token>,
     line_number: u64,
     column_number: u64,
-    buffer: Peekable<Chars<'a>>,
+    stream: Peekable<Chars<'a>>,
 }
 
-impl<'a> Tokenizer<'a> {
-    pub fn new(buffer: &'a str) -> Tokenizer<'a> {
-        Tokenizer {
+impl<'a> Lexer<'a> {
+    pub fn new(stream: &'a String) -> Lexer<'a> {
+        Lexer {
             tokens: Vec::new(),
             line_number: 1,
             column_number: 1,
-            buffer: buffer.chars().peekable(),
+            stream: stream.chars().peekable(),
         }
     }
 
     fn preview_next(&mut self) -> Option<char> {
-        self.buffer.peek().copied()
+        self.stream.peek().copied()
     }
 
     fn next(&mut self) -> Result<char, TokenizerError> {
-        match self.buffer.next() {
+        match self.stream.next() {
             Some(ch) => Ok(ch),
             None => Err(TokenizerError::NoTokens),
         }
     }
 
-    pub fn lex(&mut self) -> Result<Vec<Token>, TokenizerError> {
+    pub fn analyse(&mut self) -> Result<Vec<Token>, TokenizerError> {
         loop {
-            let buf_char = self.next()?;
+            let current_char = self.next()?;
 
-            match buf_char {
-                _ if SingleComparison::from_char(buf_char).is_ok()  => {
+            match current_char {
+                _ if SingleComparison::from_char(current_char).is_ok()  => {
                     let mut s = String::new();
-                    s.push(buf_char);
+                    s.push(current_char);
                     self.column_number += 1;
                     let second = self.preview_next();
                     match second {
-                        None => self.tokens.push(Token::new(TokenKind::SingleComparison(buf_char), self.line_number, self.column_number)),
+                        None => self.tokens.push(Token::new(TokenKind::SingleComparison(current_char), self.line_number, self.column_number)),
                         Some(key) => {
                             s.push(key);
                                 if let Ok(double_comparison) = DoubleComparison::from_str(&s) {
@@ -73,28 +74,27 @@ impl<'a> Tokenizer<'a> {
                             }
                         }
                     }
-
-                _ if Assignment::from_char(buf_char).is_ok()  => {
+                _ if Assignment::from_char(current_char).is_ok()  => {
                     self.column_number += 1;
-                    self.tokens.push(Token::new(TokenKind::Assignment(buf_char), self.line_number, self.column_number))
+                    self.tokens.push(Token::new(TokenKind::Assignment(current_char), self.line_number, self.column_number))
                 }
-                _ if ArithmeticOperator::from_char(buf_char).is_ok()  => {
+                _ if ArithmeticOperator::from_char(current_char).is_ok()  => {
                     self.column_number += 1;
-                    let operator = ArithmeticOperator::from_char(buf_char).unwrap();
+                    let operator = ArithmeticOperator::from_char(current_char).unwrap();
                     self.tokens.push(Token::new(TokenKind::ArithmeticOperator(operator), self.line_number, self.column_number))
                 }
-                _ if Punctuator::from_char(buf_char).is_ok()  => {
+                _ if Punctuator::from_char(current_char).is_ok()  => {
                     self.column_number += 1;
-                    self.tokens.push(Token::new(TokenKind::Punctuator(buf_char), self.line_number, self.column_number))
+                    self.tokens.push(Token::new(TokenKind::Punctuator(current_char), self.line_number, self.column_number))
                 }
-                _ if Parenthesis::from_char(buf_char).is_ok()  => {
+                _ if Parenthesis::from_char(current_char).is_ok()  => {
                     self.column_number += 1;
-                    let par = Parenthesis::from_char(buf_char).unwrap();
+                    let par = Parenthesis::from_char(current_char).unwrap();
                     self.tokens.push(Token::new(TokenKind::Parenthesis(par), self.line_number, self.column_number))
                 }
-                _ if buf_char.is_alphabetic() || buf_char.is_alphanumeric() => {
+                _ if current_char.is_alphabetic() || current_char.is_alphanumeric() => {
                     let mut s = String::new();
-                    s.push(buf_char);
+                    s.push(current_char);
                     self.column_number += 1;
                     loop {
                         let key = self.preview_next();
