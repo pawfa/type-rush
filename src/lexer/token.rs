@@ -1,6 +1,6 @@
 use core::fmt;
 use std::fmt::{Display, Formatter};
-use crate::lexer::tokens::kind::TokenKind;
+use crate::lexer::token_kinds::kind::TokenKind;
 
 #[derive(Clone)]
 pub struct Token {

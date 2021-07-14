@@ -1,18 +1,18 @@
 use std::iter::Peekable;
 use std::str::{Chars, FromStr};
-use crate::lexer::tokens::kind::TokenKind;
-use crate::lexer::tokens::parenthesis::Parenthesis;
-use crate::lexer::tokens::punctuator::Punctuator;
-use crate::lexer::tokens::double_comparison::DoubleComparison;
-use crate::lexer::tokens::single_comparison::SingleComparison;
-use crate::lexer::tokens::triple_comparison::TripleComparison;
+use crate::lexer::token_kinds::kind::TokenKind;
+use crate::lexer::token_kinds::parenthesis::Parenthesis;
+use crate::lexer::token_kinds::punctuator::Punctuator;
+use crate::lexer::token_kinds::double_comparison::DoubleComparison;
+use crate::lexer::token_kinds::single_comparison::SingleComparison;
+use crate::lexer::token_kinds::triple_comparison::TripleComparison;
 use crate::lexer::token::Token;
 use crate::lexer::token_errors::TokenizerError;
-use crate::lexer::tokens::assignment::Assignment;
-use crate::lexer::tokens::arithmetic_operator::ArithmeticOperator;
-use crate::lexer::tokens::literal::Literal;
+use crate::lexer::token_kinds::assignment::Assignment;
+use crate::lexer::token_kinds::arithmetic_operator::ArithmeticOperator;
+use crate::lexer::token_kinds::literal::Literal;
 
-
+//lifetime poniewaz chars wymaga lifetime
 pub struct Lexer<'a> {
     tokens: Vec<Token>,
     line_number: u64,

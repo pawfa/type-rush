@@ -1,5 +1,5 @@
 use std::fmt::{Error, Display, Formatter};
-use crate::lexer::tokens::token_error::TokenError;
+use crate::lexer::token_kinds::token_error::TokenError;
 
 #[derive(Clone, Copy, PartialEq)]
 pub enum TripleComparison {

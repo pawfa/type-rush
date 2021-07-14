@@ -1,24 +1,24 @@
 use crate::lexer::token::Token;
-use crate::lexer::tokens::arithmetic_operator::ArithmeticOperator;
-use crate::lexer::tokens::keyword::Keyword;
-use crate::lexer::tokens::kind::TokenKind;
-use crate::lexer::tokens::literal::Literal;
-use crate::lexer::tokens::parenthesis::Parenthesis;
+use crate::lexer::token_kinds::arithmetic_operator::ArithmeticOperator;
+use crate::lexer::token_kinds::keyword::Keyword;
+use crate::lexer::token_kinds::kind::TokenKind;
+use crate::lexer::token_kinds::literal::Literal;
+use crate::lexer::token_kinds::parenthesis::Parenthesis;
 use crate::parser::parse_errors::ParserError;
 use crate::parser::statement::Statement;
 use crate::parser::value::PrimitiveValue;
 
-pub struct Parser<'a> {
-    tokens: &'a Vec<Token>,
-    pub statements: Vec<Statement>,
+pub struct Parser {
+    tokens: Vec<Token>,
+    statement: Statement,
     pos: usize,
 }
 
-impl<'a> Parser<'a> {
-    pub fn new(tokens: &'a Vec<Token>) -> Self {
+impl Parser {
+    pub fn new(tokens: Vec<Token>) -> Self {
         Self {
             tokens,
-            statements: Vec::new(),
+            statement: Statement::Program(Vec::new()),
             pos: 0,
         }
     }
@@ -35,14 +35,21 @@ impl<'a> Parser<'a> {
         self.pos = self.pos + 1
     }
 
-    pub fn parse_all(&mut self) {
+    pub fn parse_all(&mut self) -> Statement {
         while self.pos < self.tokens.len() {
             let result = self.parse();
+
             match result {
-                Ok(result) => self.statements.push(result),
+                Ok(result) => {
+                    if let Statement::Program(mut content) = self.statement.clone() {
+                        content.push(result);
+                        self.statement = Statement::Program(content)
+                    }
+                },
                 Err(_) => {}
             }
         }
+        return self.statement.clone()
     }
 
     fn parse(&mut self) -> Result<Statement, ParserError> {

@@ -1,6 +1,6 @@
 use std::fmt::{Display, Formatter};
 use core::fmt;
-use crate::lexer::tokens::arithmetic_operator::ArithmeticOperator;
+use crate::lexer::token_kinds::arithmetic_operator::ArithmeticOperator;
 use crate::parser::value::PrimitiveValue;
 
 #[derive(Clone, PartialEq)]
@@ -18,27 +18,36 @@ pub enum Statement {
     ArithmeticOperation(ArithmeticOperator,Box<Statement>, Box<Statement>),
     //name, type
     TypedArgument(String, String),
+    Program(Vec<Statement>)
 }
 
 impl Display for Statement {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
         match self {
             Statement::FunctionDeclaration(v,s,t) => {
-                write!(f, "function declaration - name {},", v);
-                write!(f, " args: ");
+                let mut message = String::new();
+                message.push_str(format!("function declaration - name {},", v).as_str());
+                message.push_str(" args: ");
                 for statement in s {
-                    write!(f,"{} ", statement);
+                    message.push_str(format!("{} ", statement).as_str());
                 }
-                write!(f, " block: ");
-                write!(f,"{} ", t);
-                Ok(())
+                message.push_str(format!("{} ", t).as_str());
+                return writeln!(f,"{} ", message);
             },
-            Statement::ConstDeclaration(v,_) => write!(f, "const declaration {}", v),
+            Statement::ConstDeclaration(v,val) => {
+                let mut message = String::new();
+                message.push_str(format!("const declaration {}", v).as_str());
+                message.push_str(" values: \n");
+                for statement in val {
+                    message.push_str(format!("{} ", statement).as_str());
+                }
+                return writeln!(f,"{} ", message);
+
+            },
             Statement::Block(v) => {
-                write!(f, " Block: ");
-                writeln!(f);
+                writeln!(f, " Block: ");
                 for statement in v {
-                    writeln!(f,"in block: {}, ", statement);
+                    writeln!(f,"{}", statement);
                 }
                 Ok(())
             }
@@ -48,6 +57,14 @@ impl Display for Statement {
             Statement::Call(v,_) => write!(f,"call name {}", v),
             Statement::ArithmeticOperation(v,s,t) => write!(f,"arithmetic operation {} {} {}", v,s,t),
             Statement::Return(v) => write!(f,"return statement: {}", v),
+            Statement::Program(v) => {
+                write!(f, " Program: ");
+                writeln!(f);
+                for statement in v {
+                    writeln!(f,"statement: {}, ", statement);
+                }
+                Ok(())
+            }
         }
     }
 }

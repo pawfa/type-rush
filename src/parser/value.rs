@@ -13,7 +13,7 @@ impl Display for PrimitiveValue {
         match self {
             PrimitiveValue::Boolean(v) => v.fmt(f),
             PrimitiveValue::String(v) => v.fmt(f),
-            PrimitiveValue::Num(x) => write!(f, "{}", x),
+            PrimitiveValue::Num(x) => write!(f, "primitive of type num {}", x),
         }
     }
 }

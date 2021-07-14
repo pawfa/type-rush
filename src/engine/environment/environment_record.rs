@@ -12,11 +12,10 @@ pub struct EnvironmentRecord {
 
 impl EnvironmentRecord {
     pub fn new(env_type: EnvironmentType) -> Self {
-        let exec = EnvironmentRecord {
+        Self {
             env_type,
             records: HashMap::new(),
-        };
-        exec
+        }
     }
 }
 

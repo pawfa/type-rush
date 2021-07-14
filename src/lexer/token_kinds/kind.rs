@@ -1,11 +1,11 @@
-use crate::lexer::tokens::{keyword::Keyword, flow::FlowControl, iteration::Iteration};
-use crate::lexer::tokens::parenthesis::Parenthesis;
-use crate::lexer::tokens::double_comparison::DoubleComparison;
-use crate::lexer::tokens::triple_comparison::TripleComparison;
+use crate::lexer::token_kinds::{keyword::Keyword, flow::FlowControl, iteration::Iteration};
+use crate::lexer::token_kinds::parenthesis::Parenthesis;
+use crate::lexer::token_kinds::double_comparison::DoubleComparison;
+use crate::lexer::token_kinds::triple_comparison::TripleComparison;
 use std::fmt::{Display, Formatter};
 use core::fmt;
-use crate::lexer::tokens::arithmetic_operator::ArithmeticOperator;
-use crate::lexer::tokens::literal::Literal;
+use crate::lexer::token_kinds::arithmetic_operator::ArithmeticOperator;
+use crate::lexer::token_kinds::literal::Literal;
 
 #[derive(Clone,PartialEq)]
 pub enum TokenKind {
