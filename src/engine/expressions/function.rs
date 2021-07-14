@@ -19,7 +19,7 @@ impl Function {
 
         for arg in self.args.clone() {
             match arg {
-                Statement::TypedArgument(n,t) => println!("stored typed arg name {}, type {}", n,t),
+                Statement::TypedParameter(n, t) => println!("stored typed arg name {}, type {}", n, t),
                 a =>println!("stored arg {}", a)
             }
 

@@ -53,7 +53,7 @@ impl Runner {
                         let func_scope = &mut EnvironmentRecord::new(EnvironmentType::Function);
 
                         for (count, arg) in func_args.iter().enumerate() {
-                            if let Statement::TypedArgument(name, _) = arg {
+                            if let Statement::TypedParameter(name, _) = arg {
                                 let passed_arg_value = match args.get(count) {
                                     Some(arg_statement) => self.run(arg_statement.clone(), scope)?,
                                     None => return Err(RunError::Message("Call error"))

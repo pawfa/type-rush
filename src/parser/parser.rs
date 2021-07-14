@@ -205,7 +205,7 @@ impl Parser {
                         self.increment();
                         match arg_token {
                             TokenKind::Identifier(arg_token) => {
-                                params.push(Statement::TypedArgument(arg_name, arg_token));
+                                params.push(Statement::TypedParameter(arg_name, arg_token));
                                 break;
                             }
                             TokenKind::Punctuator(':') => {}

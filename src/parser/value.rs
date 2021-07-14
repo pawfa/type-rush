@@ -8,6 +8,16 @@ pub enum PrimitiveValue {
     Num(f64),
 }
 
+impl PrimitiveValue {
+    pub(crate) fn to_type(&self) -> &str {
+        match self {
+            PrimitiveValue::Boolean(v) => "boolean",
+            PrimitiveValue::String(v) => "string",
+            PrimitiveValue::Num(x) => "number",
+        }
+    }
+}
+
 impl Display for PrimitiveValue {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
         match self {

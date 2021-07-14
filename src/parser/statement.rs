@@ -17,7 +17,7 @@ pub enum Statement {
     Block(Vec<Statement>),
     ArithmeticOperation(ArithmeticOperator,Box<Statement>, Box<Statement>),
     //name, type
-    TypedArgument(String, String),
+    TypedParameter(String, String),
     Program(Vec<Statement>)
 }
 
@@ -51,7 +51,7 @@ impl Display for Statement {
                 }
                 Ok(())
             }
-            Statement::TypedArgument(v,s) => write!(f, "typed arguments ({}, {})", v, s),
+            Statement::TypedParameter(v, s) => write!(f, "typed arguments ({}, {})", v, s),
             Statement::Primitive(v) => write!(f, "value {}", v),
             Statement::VariableRef(v) => write!(f,"variable ref with name {}",v),
             Statement::Call(v,_) => write!(f,"call name {}", v),
