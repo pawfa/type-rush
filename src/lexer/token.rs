@@ -21,6 +21,6 @@ impl Token {
 
 impl Display for Token {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
-        write!(f, "TokenKind: {} \nLine number: {} \nColumn number: {}\n", self.kind, self.line_number, self.column_number)
+        write!(f, "Token:\n{}Line number: {} \nColumn number: {}\n", self.kind, self.line_number, self.column_number)
     }
 }

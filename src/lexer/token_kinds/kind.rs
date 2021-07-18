@@ -27,16 +27,36 @@ pub enum TokenKind {
 impl Display for TokenKind {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
         match self {
-            TokenKind::Assignment(v) => v.fmt(f),
-            TokenKind::ArithmeticOperator(v) => v.fmt(f),
-            TokenKind::SingleComparison(v) => v.fmt(f),
-            TokenKind::DoubleComparison(v) => v.fmt(f),
-            TokenKind::TripleComparison(v) => v.fmt(f),
-            TokenKind::Parenthesis(v) => v.fmt(f),
-            TokenKind::Punctuator(v) => v.fmt(f),
-            TokenKind::Keyword(v) => v.fmt(f),
-            TokenKind::Identifier(v) => v.fmt(f),
-            TokenKind::Literal(v) => v.fmt(f),
+            TokenKind::Assignment(v) => {
+                return write!(f, "Kind: Assignment \nValue: {} \n", v);
+            },
+            TokenKind::ArithmeticOperator(v) => {
+                return write!(f, "Kind: ArithmeticOperator \nValue: {} \n", v);
+            },
+            TokenKind::SingleComparison(v) => {
+                return write!(f, "Kind: SingleComparison \nValue: {} \n", v);
+            },
+            TokenKind::DoubleComparison(v) => {
+                return write!(f, "Kind: DoubleComparison \nValue: {} \n", v);
+            },
+            TokenKind::TripleComparison(v) => {
+                return write!(f, "Kind: TripleComparison \nValue: {} \n", v);
+            },
+            TokenKind::Parenthesis(v) => {
+                return write!(f, "Kind: Parenthesis \nValue: {} \n", v);
+            },
+            TokenKind::Punctuator(v) => {
+                return write!(f, "Kind: Punctuator \nValue: {} \n", v);
+            },
+            TokenKind::Keyword(v) => {
+                return write!(f, "Kind: Keyword \nValue: {} \n", v);
+            },
+            TokenKind::Identifier(v) => {
+                return write!(f, "Kind: Identifier \nValue: {} \n", v);
+            },
+            TokenKind::Literal(v) => {
+                return write!(f, "Kind: Literal \nValue: {} \n", v);
+            },
             _ => write!(f, "invalid token kind")
         }
     }

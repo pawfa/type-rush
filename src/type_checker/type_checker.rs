@@ -16,9 +16,6 @@ impl TypeChecker {
         if let Statement::Program(global_statements) = self.statement.clone() {
             for statement in &global_statements {
                 match statement {
-                    Statement::VariableRef(ref name) => {
-                        println!("{}", name);
-                    }
                     Statement::Call(ref call_name, ref args) => {
                         match global_statements.iter().find_map(|d| match d {
                             Statement::FunctionDeclaration(funcName, args, _) => {
@@ -35,7 +32,12 @@ impl TypeChecker {
                                         if let Statement::Primitive(argument) = arg {
                                             if let Statement::TypedParameter(_, param_type) = param {
                                                 if !(argument.to_type() == param_type) {
-                                                    return Err(TypeError::Message(format!("Wrong type used in call {}, expected type {}, received type {}", call_name, param_type, argument.to_type())));
+                                                    let message = format!(
+                                                        "Wrong type used in call {}, expected type {}, received type {}",
+                                                        call_name, param_type,
+                                                        argument.to_type()
+                                                    );
+                                                    return Err(TypeError::Message(message));
                                                 }
                                             }
                                         }
