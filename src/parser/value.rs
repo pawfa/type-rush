@@ -11,9 +11,9 @@ pub enum PrimitiveValue {
 impl PrimitiveValue {
     pub(crate) fn to_type(&self) -> &str {
         match self {
-            PrimitiveValue::Boolean(v) => "boolean",
-            PrimitiveValue::String(v) => "string",
-            PrimitiveValue::Num(x) => "number",
+            PrimitiveValue::Boolean(_v) => "boolean",
+            PrimitiveValue::String(_v) => "string",
+            PrimitiveValue::Num(_x) => "number",
         }
     }
 }

@@ -18,8 +18,8 @@ impl TypeChecker {
                 match statement {
                     Statement::Call(ref call_name, ref args) => {
                         match global_statements.iter().find_map(|d| match d {
-                            Statement::FunctionDeclaration(funcName, args, _) => {
-                                if call_name == funcName {
+                            Statement::FunctionDeclaration(func_name, args, _) => {
+                                if call_name == func_name {
                                     return Some(args);
                                 }
                                 None

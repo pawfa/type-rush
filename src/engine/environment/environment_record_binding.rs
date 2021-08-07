@@ -1,17 +1,16 @@
-use crate::engine::js_value::JSValue;
+use crate::engine::ts_value::TSValue;
 use std::fmt::{Display, Formatter};
 use core::fmt;
 
 //binded code value in current environment
 pub struct EnvironmentRecordBinding {
-    pub value: Option<JSValue>
+    pub value: TSValue
 }
 
 impl Display for EnvironmentRecordBinding {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
         match &self.value {
-            None => write!(f, "EnvironmentRecordBinding value: None"),
-            Some(js_val) => write!(f, "EnvironmentRecordBinding value: {}",js_val)
+            ts_val => write!(f, "EnvironmentRecordBinding value: {}", ts_val)
         }
 
     }

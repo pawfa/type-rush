@@ -1,5 +1,4 @@
 use core::fmt;
-use std::error;
 
 #[derive(Debug)]
 pub enum TypeError {

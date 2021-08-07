@@ -45,11 +45,12 @@ impl Display for Statement {
 
             },
             Statement::Block(v) => {
-                writeln!(f, " Block: ");
+                let mut message = String::new();
+                message.push_str(" Block: \n");
                 for statement in v {
-                    writeln!(f,"{}", statement);
+                    message.push_str(format!("{} \n", statement).as_str());
                 }
-                Ok(())
+                return writeln!(f,"{} ", message);
             }
             Statement::TypedParameter(v, s) => write!(f, "typed arguments ({}, {})", v, s),
             Statement::Primitive(v) => write!(f, "value {}", v),
@@ -58,12 +59,12 @@ impl Display for Statement {
             Statement::ArithmeticOperation(v,s,t) => write!(f,"arithmetic operation {} {} {}", v,s,t),
             Statement::Return(v) => write!(f,"return statement: {}", v),
             Statement::Program(v) => {
-                write!(f, " Program: ");
-                writeln!(f);
+                let mut message = String::new();
+                message.push_str(" Program: \n");
                 for statement in v {
-                    writeln!(f,"statement: {}, ", statement);
+                    message.push_str(format!("statement: {} \n", statement).as_str());
                 }
-                Ok(())
+                return writeln!(f,"{} ", message);
             }
         }
     }

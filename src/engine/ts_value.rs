@@ -4,7 +4,7 @@ use crate::engine::expressions::function::Function;
 use std::ops::{Add, Sub, Mul, Div};
 
 #[derive(Clone, PartialEq)]
-pub enum JSValue {
+pub enum TSValue {
     Boolean(bool),
     String(String),
     Num(f64),
@@ -12,58 +12,58 @@ pub enum JSValue {
     Undefined
 }
 
-impl Display for JSValue {
+impl Display for TSValue {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
         match self {
-            JSValue::Boolean(v) => v.fmt(f),
-            JSValue::String(v) => v.fmt(f),
-            JSValue::Num(x) => write!(f, "{}", x),
-            JSValue::Function(x) => write!(f, "{}", x),
-            JSValue::Undefined => write!(f, "{}", "undefined"),
+            TSValue::Boolean(v) => v.fmt(f),
+            TSValue::String(v) => v.fmt(f),
+            TSValue::Num(x) => write!(f, "{}", x),
+            TSValue::Function(x) => write!(f, "{}", x),
+            TSValue::Undefined => write!(f, "{}", "undefined"),
         }
     }
 }
 
-impl Add for JSValue {
+impl Add for TSValue {
     type Output = Self;
 
     fn add(self, second: Self) -> Self {
         match (self, second) {
-            (JSValue::Num(v), JSValue::Num(z)) => JSValue::Num(v+z),
-            _ => JSValue::Undefined
+            (TSValue::Num(v), TSValue::Num(z)) => TSValue::Num(v+z),
+            _ => TSValue::Undefined
         }
     }
 }
 
-impl Sub for JSValue {
+impl Sub for TSValue {
     type Output = Self;
 
     fn sub(self, second: Self) -> Self {
         match (self, second) {
-            (JSValue::Num(v), JSValue::Num(z)) => JSValue::Num(v-z),
-            _ => JSValue::Undefined
+            (TSValue::Num(v), TSValue::Num(z)) => TSValue::Num(v-z),
+            _ => TSValue::Undefined
         }
     }
 }
 
-impl Mul for JSValue {
+impl Mul for TSValue {
     type Output = Self;
 
     fn mul(self, second: Self) -> Self {
         match (self, second) {
-            (JSValue::Num(v), JSValue::Num(z)) => JSValue::Num(v*z),
-            _ => JSValue::Undefined
+            (TSValue::Num(v), TSValue::Num(z)) => TSValue::Num(v*z),
+            _ => TSValue::Undefined
         }
     }
 }
 
-impl Div for JSValue {
+impl Div for TSValue {
     type Output = Self;
 
     fn div(self, second: Self) -> Self {
         match (self, second) {
-            (JSValue::Num(v), JSValue::Num(z)) => JSValue::Num(v/z),
-            _ => JSValue::Undefined
+            (TSValue::Num(v), TSValue::Num(z)) => TSValue::Num(v/z),
+            _ => TSValue::Undefined
         }
     }
 }
