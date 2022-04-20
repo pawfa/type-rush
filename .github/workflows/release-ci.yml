@@ -1,0 +1,19 @@
+name: Release CI
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: jetli/wasm-pack-action@v0.3.0
+      - name: Build engine as wasm
+        run: wasm-pack build
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+      - name: Install UI dependencies
+        working-directory: ./www
+        run: npm ci
+      - name: Build UI
+        working-directory: ./www
+        run: npm run build
