@@ -9,4 +9,3 @@ function add(first: number, second: number) {
 }
 
 add(3,2)`);
-console.log('asdasdasd')

@@ -36,6 +36,7 @@ extern "C" {
 
 #[wasm_bindgen]
 pub fn run(analysed_code: &str) {
+    log("Engine starting");
     let tokens = Lexer::new(&analysed_code.to_string()).analyse().unwrap();
 
     let statement = Parser::new(tokens).parse_all();
