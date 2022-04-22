@@ -1,4 +1,4 @@
-import * as wasm from "type-rush";
+import * as wasm from "../pkg/index";
 
 wasm.run(`const test = 1 + 2;
 const variable = test + 4;
@@ -9,3 +9,4 @@ function add(first: number, second: number) {
 }
 
 add(3,2)`);
+console.log('asdasdasd')
