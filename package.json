@@ -16,11 +16,21 @@
   "author": "Ashley Williams <ashley666ashley@gmail.com>",
   "license": "(MIT OR Apache-2.0)",
   "devDependencies": {
+    "@babel/core": "^7.17.9",
+    "@babel/preset-env": "^7.16.11",
+    "@babel/preset-react": "^7.16.7",
     "@wasm-tool/wasm-pack-plugin": "^1.6.0",
+    "babel-loader": "^8.2.5",
     "copy-webpack-plugin": "^5.0.0",
     "hello-wasm-pack": "^0.1.0",
+    "html-webpack-plugin": "^4.5.2",
     "webpack": "^4.29.3",
     "webpack-cli": "^3.1.0",
     "webpack-dev-server": "^3.1.5"
+  },
+  "dependencies": {
+    "babel-preset-react-app": "^3.1.2",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
   }
 }
