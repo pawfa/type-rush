@@ -7,8 +7,17 @@ use crate::parser::value::PrimitiveValue;
 use crate::engine::environment::run_errors::RunError;
 use crate::engine::environment::environment_record_binding::EnvironmentRecordBinding;
 use crate::engine::expressions::function::Function;
+use wasm_bindgen::prelude::*;
 
 type RunResult = Result<TSValue, RunError>;
+
+#[wasm_bindgen]
+extern "C" {
+    type PubSub;
+
+    #[wasm_bindgen(js_namespace = ["window","PubSub"])]
+    fn emit(func: &str);
+}
 
 pub struct Runner {}
 
@@ -24,10 +33,16 @@ impl Runner {
                 match self.run(statement, global_scope) {
                     Ok(val) => {
                         if val != TSValue::Undefined {
+                            PubSub::emit(val.to_string().as_str());
                             println!("{}",val)
                         }
                     }
-                    Err(_) => {}
+                    Err(e) => {
+                        let mut msg = String::new();
+                        msg.push_str("Error: ");
+                        msg.push_str(e.to_string().as_str());
+                        PubSub::emit( msg.as_str());
+                    }
                 }
             }
         }

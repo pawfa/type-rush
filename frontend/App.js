@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import * as wasm from "../pkg";
 
 wasm.run(`const test = 1 + 2;
@@ -21,21 +21,29 @@ function add(first: number, second: number) {
 
 add(3,2)`
 
-export function App(){
+export function App() {
     const [code, setCode] = useState(placeholder)
+    const [result, setResult] = useState("")
 
     const handleTextAreaChange = (event) => {
-        console.log(event.target.value)
         setCode(event.target.value)
     }
 
     const handleCompileButtonClick = () => {
-        console.log(code);
         wasm.run(code);
     }
 
+    useEffect(() => {
+        window.PubSub.subscribe("UI", (e) => setResult(e));
+
+        return () => window.PubSub.unsubscribe("UI")
+    }, [])
+
     return <div>
-        <textarea onChange={handleTextAreaChange} cols={40} rows={15} defaultValue={placeholder}/>
-        <button onClick={handleCompileButtonClick}>Compile</button>
+        <div>
+            <textarea onChange={handleTextAreaChange} cols={40} rows={15} defaultValue={placeholder}/>
+            <button onClick={handleCompileButtonClick}>Compile</button>
+        </div>
+        {result}
     </div>
 }
